@@ -17,9 +17,11 @@ class irc:
 		# connect to IRC
 		self.irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.irc.connect((network, serverport))
+		self.delay = 0.5
 		
 	def recv(self):
 		data = self.irc.recv(self.localport).strip('\n\r')
+		# NickServ authentication
 		if not self.authenticated and data.find('MOTD') != -1:
 			self.authenticated = True
 			self.auth()
@@ -27,8 +29,8 @@ class irc:
 
 	def send(self, data):
 		data = data.split('\n')[0]
-		if len(data) > 496:
-			data = data[:data[:500].rfind(' ')]+' ...'
+		if len(data) > 396:
+			data = data[:data[:400].rfind(' ')]+' ...'
 		print '<'+data
 		self.irc.send(data+'\r\n')
 		
@@ -37,7 +39,14 @@ class irc:
 		for line in msg.split('\n'):
 			line = line.replace('\r','')
 			self.send('PRIVMSG '+to+' :'+line)
-			time.sleep(0.5)
+			time.sleep(self.delay)
+
+	# NOTICE
+	def notice(self, to, msg):
+		for line in msg.split('\n'):
+			line = line.replace('\r','')
+			self.send('NOTICE '+to+' :'+line)
+			time.sleep(self.delay)
 	
 	def join(self, channel):
 		self.send('JOIN '+channel+'\r\n')
@@ -65,3 +74,9 @@ class irc:
 	def godMessage(self, message):
 		for god in self.gods:
 			self.message(god, message)
+			
+	def setDelay(self, time):
+		self.delay = time
+	
+	def getDelay(self):
+		return self.delay

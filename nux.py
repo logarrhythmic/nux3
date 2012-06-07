@@ -28,8 +28,6 @@ irc = irc.irc(network, serverport, localport)
 irc.addGod(god)
 irc.send('USER nux h h nux 3.0')
 irc.send('NICK nux')
-irc.auth()
-
 
 while 1:
 	if loop.cycle(irc):
