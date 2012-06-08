@@ -24,13 +24,13 @@ for arg in sys.argv:
 		
 
 #irc = loop.loop(network, serverport, localport, god)
-irc = irc.irc(network, serverport, localport)
-irc.addGod(god)
-irc.send('USER nux h h nux 3.0')
-irc.send('NICK nux')
+connection = irc.Irc(network, serverport, localport)
+connection.addGod(god)
+connection.send('USER nux h h nux 3.0')
+connection.send('NICK nux')
 
 while 1:
-	if loop.cycle(irc):
+	if loop.cycle(connection):
 		reload(loop)
-		reload(irc)
+#		reload(irc)
 		print '\n*** RELOADED MODULES ***\n'

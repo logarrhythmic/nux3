@@ -88,7 +88,7 @@ def parseYouTube(url):
 
 # returns True if needs to be reloaded
 def cycle(connection):
-	reload = False
+	reloadModules = False
 	ircmsg = connection.recv().strip('\n\r')
 	for line in ircmsg.split('\n'):
 		print '>'+line			
@@ -121,14 +121,15 @@ def cycle(connection):
 			# God commands
 			if connection.isGod(nick):
 				# join a channel
-				if cmd == '!join':
-					if arg:
-						connection.join(arg.split()[0])
+				if cmd == '!join' and arg:
+					for channel in arg.split():
+						connection.join(channel)
 
 				# part from a channel
 				elif cmd == '!part':
 					if arg:
-						connection.part(arg, nick)
+						for channel in arg.split():
+							connection.part(channel, nick)
 					else:
 						connection.part(sender, nick)
 
@@ -163,7 +164,7 @@ def cycle(connection):
 
 				# reload modules
 				elif cmd == '!reload':
-					reload = True
+					reloadModules = True
 					reload(irc)
 					copy = getattr(irc, 'Irc')
 					connection.__class__ = copy
@@ -327,4 +328,4 @@ def cycle(connection):
 				print 'GOD HAS QUIT ('+nick+')'
 				connection.removeGod(nick) # god.txt
 
-	return reload
+	return reloadModules

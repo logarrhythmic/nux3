@@ -6,7 +6,7 @@ import socket
 import time
 import sys
 
-class irc:
+class Irc:
 	def __init__(self, network, serverport, localport):
 		self.network = network
 		self.serverport = serverport
@@ -15,12 +15,12 @@ class irc:
 		self.authenticated = False
 		
 		# connect to IRC
-		self.irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.irc.connect((network, serverport))
+		self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.connection.connect((network, serverport))
 		self.delay = 0.5
 		
 	def recv(self):
-		data = self.irc.recv(self.localport).strip('\n\r')
+		data = self.connection.recv(self.localport).strip('\n\r')
 		# NickServ authentication
 		if not self.authenticated and data.find('MOTD') != -1:
 			self.authenticated = True
@@ -32,13 +32,13 @@ class irc:
 		if len(data) > 396:
 			data = data[:data[:400].rfind(' ')]+' ...'
 		print '<'+data
-		self.irc.send(data+'\r\n')
+		self.connection.send(data+'\r\n')
 		
 	# PRIVMSG
 	def message(self, to, msg):
 		for line in msg.split('\n'):
 			line = line.replace('\r','')
-			self.send('PRIVMSG '+to+' :'+line)
+			self.send('PRIVMSG '+to+' :>'+line)
 			time.sleep(self.delay)
 
 	# NOTICE
