@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-import inspect_shell
+#import inspect_shell
 import socket
 import time
 import sys

@@ -32,4 +32,5 @@ irc.send('NICK nux')
 while 1:
 	if loop.cycle(irc):
 		reload(loop)
+		reload(irc)
 		print '\n*** RELOADED MODULES ***\n'

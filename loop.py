@@ -2,14 +2,13 @@
 # -*- coding: UTF-8 -*-
 
 import irc
-#import url
 import os
 import urllib2
-#import httplib
 import HTMLParser
 import re
 import time
 import random
+import imp
 
 h = HTMLParser.HTMLParser()
 
@@ -38,14 +37,14 @@ def geturl(url):
 def printable(text):
 	return re.sub('[\x00-\x1f]','',text)
 
-def messageUnescaped(irc, to, text):
+def messageUnescaped(connection, to, text):
 	try:
-		irc.message(to, h.unescape(text))
+		connection.message(to, h.unescape(text))
 	except:
-		irc.message(to, text)
+		connection.message(to, text)
 		
 def cleanHTML(html):
-	return printable(re.sub(r'<[^>]*>','',html)).strip(' ')
+	return printable(re.sub(' +',' ',re.sub(r'<[^>]*>','',html)).strip(' '))
 	
 def parseYouTube(url):
 	try:
@@ -55,7 +54,7 @@ def parseYouTube(url):
 		title = youtube[youtube.find('<meta name="title" content="')+28:]
 		title = cleanHTML(title[:title.find('">')])
 		uploader = youtube[youtube.find('class="yt-user-name author" rel="author" dir="ltr">')+51:]
-		uploader = cleanHTML(uploader[:uploader.find('</span>')])
+		uploader = cleanHTML(uploader[:uploader.find('</a>')])
 		if uploader.find(', ') != -1:
 			uploader = uploader[:uploader.find(', ')]
 		print uploader
@@ -79,16 +78,18 @@ def parseYouTube(url):
 		likes = cleanHTML(likes[:likes.find('</span>')])
 		dislikes = youtube[youtube.find('class="dislikes">')+17:]
 		dislikes = cleanHTML(dislikes[:dislikes.find('</span>')])
-		return '\00300[You\00304Tube\00300] \002'+title+'\002 \00311('+minutes+':'+seconds+') \00312by '+uploader+'\00314\002\002, \00309'+likes+' likes\00314\002\002, \00304'+dislikes+' dislikes\00314\002\002, \00308'+views+' views'
+		return '\00300[You\00304Tube\00300] \002'+title+'\002 \00311('+minutes+':'+seconds+') \
+		\00312by '+uploader+'\00314\002\002, \00309'+likes+' likes\00314\002\002, \
+		\00304'+dislikes+' dislikes\00314\002\002, \00308'+views+' views'
 	except Exception as e:
 		print 'EXECTION WITH YOUTUBE "'+url+'"'
 		print e
 		return ''
 
 # returns True if needs to be reloaded
-def cycle(irc):
+def cycle(connection):
 	reload = False
-	ircmsg = irc.recv().strip('\n\r')
+	ircmsg = connection.recv().strip('\n\r')
 	for line in ircmsg.split('\n'):
 		print '>'+line			
 		linesplit = line.split()
@@ -96,7 +97,7 @@ def cycle(irc):
 		# it doesn't matter if nux sends unnecessary PONGs
 		# but it does matter if any PING is ignored
 		if line.startswith('PING :'):
-			irc.send('PONG :'+line.split('PING :')[1])
+			connection.send('PONG :'+line.split('PING :')[1])
 			continue
 		
 		nick = ''
@@ -118,85 +119,88 @@ def cycle(irc):
 				sender = linesplit[2]
 			
 			# God commands
-			if irc.isGod(nick):
+			if connection.isGod(nick):
 				# join a channel
 				if cmd == '!join':
 					if arg:
-						irc.join(arg.split()[0])
+						connection.join(arg.split()[0])
 
 				# part from a channel
 				elif cmd == '!part':
 					if arg:
-						irc.part(arg, nick)
+						connection.part(arg, nick)
 					else:
-						irc.part(sender, nick)
+						connection.part(sender, nick)
 
 				# (rage)quit
 				elif cmd == '!quit':
 					if arg:
-						irc.send('QUIT :killed by '+nick+' ('+arg+')')
+						connection.send('QUIT :killed by '+nick+' ('+arg+')')
 					else:
-						irc.send('QUIT :killed by '+nick)
+						connection.send('QUIT :killed by '+nick)
 					quit()
 
 				# change channel mode
 				elif cmd == '!mode' and arg:
 					if arg[0] == '#' or arg[0] == '&':
-						irc.send('MODE '+arg)
+						connection.send('MODE '+arg)
 					else:
-						irc.send('MODE '+sender+' '+arg)
+						connection.send('MODE '+sender+' '+arg)
 
 				# add or list gods
 				elif cmd == '!god':
 					if arg:
 						for god in arg.split():
-							irc.addGod(god)
+							connection.addGod(god)
 					else:
-						irc.message(sender, irc.getGods())
+						connection.message(sender, connection.getGods())
 
 				# remove a god
 				elif cmd == '!devil':
 					if arg:
 						for god in arg.split():
-							irc.removeGod(god)
+							connection.removeGod(god)
 
 				# reload modules
 				elif cmd == '!reload':
 					reload = True
+					reload(irc)
+					copy = getattr(irc, 'Irc')
+					connection.__class__ = copy
 					continue
 					
 				# delay between PRIVMSGs
 				elif cmd == '!delay':
 					if arg:
 						try:
-							irc.setDelay(float(arg))
+							connection.setDelay(float(arg))
 						except ValueError:
 							pass
 					else:
-						irc.message(sender, str(irc.getDelay()))
+						connection.message(sender, str(connection.getDelay()))
 
 			# Non god commands
 										
 			if cmd == '!reset':
 				try:
-					irc.addGod(open('god.txt').read())
+					connection.addGod(open('god.txt').read())
 					open('god.txt', 'w').writelines('')
 				except:
 					pass
 
 			elif cmd == '!help':
-				irc.message(sender, '!help !ud !day !wa !maze')
+				connection.message(sender, '!help !ud !day !wa !maze')
 
 			# Urban Dictionary
 			elif cmd == '!ud':
-				data = gethttp('http://www.urbandictionary.com/define.php?term='
-				+ urllib2.quote(arg)).split("\n")
+				data = gethttp('http://www.urbandictionary.com/define.php?term='\
+				+urllib2.quote(arg)).split("\n")
 				answer = "ei tuloksia"
 				for line in data:
 					if line.find('class="definition"') != -1:
 						answer = re.sub(r'<[^>]*>','',line)
 						break
-				messageUnescaped(irc, sender, answer)
+				messageUnescaped(connection, sender, answer)
 
 			# What's special in today
 			elif cmd == '!day':
@@ -214,12 +218,13 @@ def cycle(irc):
 						add = True
 						
 				# if `date +%-d.%-m.` outputs '-d.-m.', replace '%-d.%-m.' with '%d.%m.'
-				irc.message(sender, time.strftime('%-d.%-m.') + random.choice(fun[1:-1]))
+				connection.message(sender, time.strftime('%-d.%-m.') + random.choice(fun[1:-1]))
 
 			# Wolfram|Alpha
 			elif cmd == '!wa':
 				result = "ei tuloksia"
-				wa = gethttp('http://www.wolframalpha.com/input/?i='+urllib2.quote(arg)).split('\n')
+				wa = gethttp('http://www.wolframalpha.com/input/?i='\
+				+urllib2.quote(arg)).split('\n')
 				n = 0
 				for line in wa:
 					if line.find('stringified') != -1:
@@ -227,7 +232,7 @@ def cycle(irc):
 						if(n == 2):
 							result = line.split('"')[ 3 ].replace("\\n","\r\n")
 				# todo: make a nice array
-				messageUnescaped(irc, sender, result)
+				messageUnescaped(connection, sender, result)
 
 			if msg.find('://') != -1:
 				url = msg[max(0, msg[:msg.find('://')].rfind(' ')+1):]
@@ -239,18 +244,20 @@ def cycle(irc):
 					data = gethttp(url)
 					realurl = geturl(url)
 					if realurl.startswith('http://www.youtube.com/watch'):
-						irc.message(sender, parseYouTube(url))
+						connection.message(sender, parseYouTube(url))
 					else:
 						if data.find('<title>') != -1 and data.find('</title>') != -1:
-							title = re.sub(r'<[^>]*>','',data[data.find('<title>')+7:data.find('</title>')])
+							title = re.sub(r'<[^>]*>','',\
+							data[data.find('<title>')+7:data.find('</title>')])
 							if realurl != url:
 								realurl = realurl[realurl.find('://')+3:]
 								realurl = realurl[:realurl.find('/')]
-								messageUnescaped(irc, sender, 'Title: '+cleanHTML(title)+' \00315(at \00310\002'+realurl+'\002\00315)')
+								messageUnescaped(connection, sender, 'Title: '+cleanHTML(title)+' \
+								\00315(at \00310\002'+realurl+'\002\00315)')
 							else:
-								messageUnescaped(irc, sender, 'Title: '+cleanHTML(title))
+								messageUnescaped(connection, sender, 'Title: '+cleanHTML(title))
 						else:
-							irc.message(sender, 'No title')
+							connection.message(sender, 'No title')
 				else:
 					print 'unknown protocol ('+protocol+')'
 					
@@ -262,62 +269,62 @@ def cycle(irc):
 					print x
 					y = int(arg[arg.find('x')+1:])
 					print y
-					if irc.isGod(nick):
+					if connection.isGod(nick):
 						if y > 40 or x > 63:
-							irc.message(sender, 'suurin koko on 63x40')
+							connection.message(sender, 'suurin koko on 63x40')
 					else:
 						if y > 10 or x > 30:
-							irc.message(sender, 'suurin koko on 30x10')
+							connection.message(sender, 'suurin koko on 30x10')
 
 					if x < 3 or y < 3:
-						irc.message(sender, 'pienin koko on 3x3')
+						connection.message(sender, 'pienin koko on 3x3')
 					else:
 						maze = os.popen('java Generator '+str(x)+' '+str(y)+' | ./box.sh').read()
-						if irc.isGod(nick) or y < 6:
-							irc.message(sender, maze)
+						if connection.isGod(nick) or y < 6:
+							connection.message(sender, maze)
 						else:
-							irc.message(nick, maze)
+							connection.message(nick, maze)
 				except ValueError:
-					irc.message(sender, 'syntaksi: !maze <leveys>x<korkeus>')
+					connection.message(sender, 'syntaksi: !maze <leveys>x<korkeus>')
 				except IndexError:
-					irc.message(sender, 'syntaksi: !maze <leveys>x<korkeus>')
+					connection.message(sender, 'syntaksi: !maze <leveys>x<korkeus>')
 
 			
 		# Join if invited
 		elif action == 'INVITE':
-			irc.godMessage(nick+' kutsui minut kanavalle '+linesplit[3][1:])
+			connection.godMessage(nick+' kutsui minut kanavalle '+linesplit[3][1:])
 			if linesplit[3][1] == '#' or linesplit[3][1] == '&':
-				irc.join(linesplit[3][1:])
+				connection.join(linesplit[3][1:])
 				
 		# Keep gods list updated
 		elif action == 'NICK':
-			if irc.isGod(nick):
-				irc.removeGod(nick)
-				irc.addGod(linesplit[2][1:])
+			if connection.isGod(nick):
+				connection.removeGod(nick)
+				connection.addGod(linesplit[2][1:])
 		
 		# Cycle if not operator and alone on a channel
 		elif action == 'PART':
 			sender = linesplit[2]
-			irc.send('NAMES '+sender)
-			line = irc.recv().strip('\r\n')
+			connection.send('NAMES '+sender)
+			line = connection.recv().strip('\r\n')
 			names = line.split(':')[2].split()
 			if len(names) == 1:
 				if names[0][0] == 'n' or names[0][0] == '+' or names[0][0] == '%':
 					print line.split(':')
 					print line.split(':')[2].split()
-					irc.part(sender, nick)
-					irc.join(sender)
-					irc.godMessage('valtasin kanavan '+sender)
+					connection.part(sender, nick)
+					connection.join(sender)
+					connection.godMessage('valtasin kanavan '+sender)
 		
 		# Auto rejoin
 		elif action == 'KICK':
-			irc.join(line.split()[2])
+			connection.join(line.split()[2])
 			
 		# Protect self from hackers
 		elif action == 'QUIT':
 			nick = line[1:line.find('!')]
-			if irc.isGod(nick):
+			if connection.isGod(nick):
 				print 'GOD HAS QUIT ('+nick+')'
-				irc.removeGod(nick) # god.txt
+				connection.removeGod(nick) # god.txt
 
 	return reload
