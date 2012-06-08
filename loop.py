@@ -13,7 +13,7 @@ import random
 
 h = HTMLParser.HTMLParser()
 
-def geturl(url):
+def gethttp(url):
 	try:
 		opener = urllib2.build_opener()
 		opener.addheaders = [('User-agent', 'Nux/3.0')]
@@ -22,6 +22,18 @@ def geturl(url):
 		print 'EXECTION WITH URL "'+url+'"'
 		print e
 		return ''
+
+def geturl(url):
+	try:
+		response = urllib2.urlopen(url)
+		print response.geturl()
+		''.join(response.geturl())
+		return ''.join(response.geturl())
+	except Exception as e:
+		print 'EXECTION WITH URL "'+url+'"'
+		print e
+		return url
+
 
 def printable(text):
 	return re.sub('[\x00-\x1f]','',text)
@@ -67,7 +79,7 @@ def parseYouTube(url):
 		likes = cleanHTML(likes[:likes.find('</span>')])
 		dislikes = youtube[youtube.find('class="dislikes">')+17:]
 		dislikes = cleanHTML(dislikes[:dislikes.find('</span>')])
-		return '\00300[You\00304Tube\00300] \002'+title+'\002 \00310('+minutes+':'+seconds+') \00312by '+uploader+'\00301, \00309'+likes+' likes\00301, \00304'+dislikes+' dislikes\00301, \00308'+views+' views'
+		return '\00300[You\00304Tube\00300] \002'+title+'\002 \00311('+minutes+':'+seconds+') \00312by '+uploader+'\00314\002\002, \00309'+likes+' likes\00314\002\002, \00304'+dislikes+' dislikes\00314\002\002, \00308'+views+' views'
 	except Exception as e:
 		print 'EXECTION WITH YOUTUBE "'+url+'"'
 		print e
@@ -177,7 +189,7 @@ def cycle(irc):
 
 			# Urban Dictionary
 			elif cmd == '!ud':
-				data = geturl('http://www.urbandictionary.com/define.php?term='
+				data = gethttp('http://www.urbandictionary.com/define.php?term='
 				+ urllib2.quote(arg)).split("\n")
 				answer = "ei tuloksia"
 				for line in data:
@@ -189,7 +201,7 @@ def cycle(irc):
 			# What's special in today
 			elif cmd == '!day':
 				date = time.strftime('%B_%e').replace(' ','')
-				data = geturl('http://en.wikipedia.org/wiki/'+date).split('\n')
+				data = gethttp('http://en.wikipedia.org/wiki/'+date).split('\n')
 				fun = []
 				add = False
 				for line in data:
@@ -207,7 +219,7 @@ def cycle(irc):
 			# Wolfram|Alpha
 			elif cmd == '!wa':
 				result = "ei tuloksia"
-				wa = geturl('http://www.wolframalpha.com/input/?i='+urllib2.quote(arg)).split('\n')
+				wa = gethttp('http://www.wolframalpha.com/input/?i='+urllib2.quote(arg)).split('\n')
 				n = 0
 				for line in wa:
 					if line.find('stringified') != -1:
@@ -224,13 +236,19 @@ def cycle(irc):
 					if url.find(' ') != -1:
 						url = url[:url.find(' ')]
 					print 'URL = '+url
-					data = geturl(url)
-					if url.startswith('http://www.youtube.com/watch'):
+					data = gethttp(url)
+					realurl = geturl(url)
+					if realurl.startswith('http://www.youtube.com/watch'):
 						irc.message(sender, parseYouTube(url))
 					else:
 						if data.find('<title>') != -1 and data.find('</title>') != -1:
 							title = re.sub(r'<[^>]*>','',data[data.find('<title>')+7:data.find('</title>')])
-							messageUnescaped(irc, sender, 'Title: '+cleanHTML(title))
+							if realurl != url:
+								realurl = realurl[realurl.find('://')+3:]
+								realurl = realurl[:realurl.find('/')]
+								messageUnescaped(irc, sender, 'Title: '+cleanHTML(title)+' \00315(at \00310\002'+realurl+'\002\00315)')
+							else:
+								messageUnescaped(irc, sender, 'Title: '+cleanHTML(title))
 						else:
 							irc.message(sender, 'No title')
 				else:
