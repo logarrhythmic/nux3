@@ -32,5 +32,4 @@ connection.send('NICK nux')
 while 1:
 	if loop.cycle(connection):
 		reload(loop)
-#		reload(irc)
 		print '\n*** RELOADED MODULES ***\n'

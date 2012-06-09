@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import irc
+import http
 import os
 import urllib2
 import HTMLParser
@@ -12,28 +13,6 @@ import imp
 
 h = HTMLParser.HTMLParser()
 
-def gethttp(url):
-	try:
-		opener = urllib2.build_opener()
-		opener.addheaders = [('User-agent', 'Nux/3.0')]
-		return ''.join(opener.open(url))
-	except Exception as e:
-		print 'EXECTION WITH URL "'+url+'"'
-		print e
-		return ''
-
-def geturl(url):
-	try:
-		response = urllib2.urlopen(url)
-		print response.geturl()
-		''.join(response.geturl())
-		return ''.join(response.geturl())
-	except Exception as e:
-		print 'EXECTION WITH URL "'+url+'"'
-		print e
-		return url
-
-
 def printable(text):
 	return re.sub('[\x00-\x1f]','',text)
 
@@ -42,49 +21,6 @@ def messageUnescaped(connection, to, text):
 		connection.message(to, h.unescape(text))
 	except:
 		connection.message(to, text)
-		
-def cleanHTML(html):
-	return printable(re.sub(' +',' ',re.sub(r'<[^>]*>','',html)).strip(' '))
-	
-def parseYouTube(url):
-	try:
-		opener = urllib2.build_opener()
-		opener.addheaders = [('User-agent', 'Nux/3.0')]
-		youtube = ''.join(opener.open(url))
-		title = youtube[youtube.find('<meta name="title" content="')+28:]
-		title = cleanHTML(title[:title.find('">')])
-		uploader = youtube[youtube.find('class="yt-user-name author" rel="author" dir="ltr">')+51:]
-		uploader = cleanHTML(uploader[:uploader.find('</a>')])
-		if uploader.find(', ') != -1:
-			uploader = uploader[:uploader.find(', ')]
-		print uploader
-		
-		duration = youtube[youtube.find('<meta itemprop="duration" content="PT')+37:]
-		duration = cleanHTML(duration[:duration.find('">')])
-		minutes = duration[:duration.find('M')]
-		seconds = duration[duration.find('M')+1:duration.find('S')]
-		if int(minutes) > 59:
-			hours = int(minutes)/60
-			if int(minutes)%60 < 10:
-				minutes = str(hours)+':0'+str(int(minutes)%60)
-			else:
-				minutes = str(hours)+':'+str(int(minutes)%60)
-		if int(seconds) < 10:
-			seconds = '0'+seconds
-			
-		views = youtube[youtube.find('class="watch-view-count">')+25:]
-		views = cleanHTML(views[:views.find('</span>')])
-		likes = youtube[youtube.find('class="likes">')+14:]
-		likes = cleanHTML(likes[:likes.find('</span>')])
-		dislikes = youtube[youtube.find('class="dislikes">')+17:]
-		dislikes = cleanHTML(dislikes[:dislikes.find('</span>')])
-		return '\00300[You\00304Tube\00300] \002'+title+'\002 \00311('+minutes+':'+seconds+') \
-		\00312by '+uploader+'\00314\002\002, \00309'+likes+' likes\00314\002\002, \
-		\00304'+dislikes+' dislikes\00314\002\002, \00308'+views+' views'
-	except Exception as e:
-		print 'EXECTION WITH YOUTUBE "'+url+'"'
-		print e
-		return ''
 
 # returns True if needs to be reloaded
 def cycle(connection):
@@ -117,6 +53,8 @@ def cycle(connection):
 			sender = nick
 			if linesplit[2][0] == '#' or linesplit[2][0] == '&':
 				sender = linesplit[2]
+			
+			helpFound = True
 			
 			# God commands
 			if connection.isGod(nick):
@@ -157,14 +95,14 @@ def cycle(connection):
 						connection.message(sender, connection.getGods())
 
 				# remove a god
-				elif cmd == '!devil':
-					if arg:
-						for god in arg.split():
-							connection.removeGod(god)
+				elif cmd == '!devil' and arg:
+					for god in arg.split():
+						connection.removeGod(god)
 
 				# reload modules
 				elif cmd == '!reload':
 					reloadModules = True
+					reload(http)
 					reload(irc)
 					copy = getattr(irc, 'Irc')
 					connection.__class__ = copy
@@ -178,23 +116,123 @@ def cycle(connection):
 						except ValueError:
 							pass
 					else:
-						connection.message(sender, str(connection.getDelay()))
+						connection.notice(nick, 'delay is '+str(connection.getDelay()))
+
+				# Say
+				elif cmd == '!say' and len(arg.split()) > 1:
+					connection.message(arg.split()[0], arg[arg.find(' ')+1:])
+
+
+				elif cmd == '!help':
+					if not arg:
+						connection.notice(nick,
+						'-- Jumalille --\n'
+						'    !delay !devil !god !join !mode !part !quit !reload !say\n'
+						'-- Kaikille --\n'
+						'    !day !help !maze (!reset) !ud !wa')
+					elif arg == '!delay' or arg == 'delay':
+						connection.notice(nick,
+						'!delay <float>\n'
+						'    Asettaa viiveen viestien välille (sekunteina).\n'
+						'!delay\n'
+						'    Kertoo asetetun viiveen.')
+					elif arg == '!devil' or arg == 'devil':
+						connection.notice(nick,
+						'!devil <nick>\n'
+						'    Poistaa <nick>:n jumalallisesta listasta.')
+					elif arg == '!god' or arg == 'god':
+						connection.notice(nick,
+						'!god <nick>\n'
+						'    Lisää <nick>:n jumalalliselle listalle. Jumalat pääsevät\n'
+						'    käsiksi kaikkiin komentoihin.\n'
+						'!god\n'
+						'    Kertoo jumalallisen listan.')
+					elif arg == '!join' or arg == 'join':
+						connection.notice(nick,
+						'!join <channel1> [<channel2> [...]]\n'
+						'    Liittyy kaikille kanaville (mille mahdollista).')
+					elif arg == '!mode' or arg == 'mode':
+						connection.notice(nick,
+						'!mode <channel> <mode>\n'
+						'    Muuttaa kanavan <channel> moodia.\n'
+						'!mode <mode>\n'
+						'    Muuttaa nykyisen kanavan moodia.')
+					elif arg == '!part' or arg == 'part':
+						connection.notice(nick,
+						'!part <channel>\n'
+						'    Poistuu kanavalta <channel>.\n'
+						'!part\n'
+						'    Poistuu nykyiseltä kanavalta.')
+					elif arg == '!quit' or arg == 'quit':
+						connection.notice(nick,
+						'!quit [<reason>]\n'
+						'    QUIT :killed by <nick>[ (<reason>)]')
+					elif arg == '!reload' or arg == 'reload':
+						connection.notice(nick,
+						'!reload\n'
+						'    Lataa moduulit uudestaan. Tarpeellinen jos on uusia\n'
+						'    päivityksiä.')
+					elif arg == '!say' or arg == 'say':
+						connection.notice(nick,
+						'!say <channel> <message>\n'
+						'    sanoo kanavalle jotain (toimii myös queryyn).\n'
+						'    PRIVMSG <channel> :<message>')
+					elif arg == '!reset' or arg == 'reset':
+						connection.notice(nick,
+						'!reset\n'
+						'    Lisää jumalalliseen listaan nikin tiedostosta god.txt.\n'
+						'    Ei normaaliin käyttöön.')
+					else:
+						helpFound = False
+
+			else:
+				if cmd == '!help' and not arg:
+					connection.notice(nick, '!day !help !maze !ud !wa')
+	
+			if cmd == '!help' and arg and not helpFound:
+				if arg == '!day' or arg == 'day':
+					date = time.strftime('%B_%e').replace(' ','')
+					connection.notice(nick,
+					'!day\n'
+					'    Mitä tänään tapahtui n vuotta sitten.\n'
+					'    http://en.wikipedia.org/wiki/'+date)
+				elif arg == '!help' or arg == 'help':
+					connection.notice(nick,
+					'!help\n'
+					'    Lista komennoista.\n'
+					'!help <cmd>\n'
+					'    Komennon <cmd> manuaali.')
+				elif arg == '!maze' or arg == 'maze':
+					connection.notice(nick,
+					'!maze <leveys>x<korkeus>\n'
+					'    Tulostaa nykyiselle kanavalle (tai queryyn) sokkelon.')
+				elif arg == '!ud' or arg == 'ud':
+					connection.notice(nick,
+					'!ud <sana>\n'
+					'    Hakee sanan selityksen osoitteesta\n'
+					'    http://www.urbandictionary.com/define.php?term=<sana>')
+				elif arg == '!wa' or arg == 'wa':
+					connection.notice(nick,
+					'!wa <lasku tai kysymys>\n'
+					'    Wolfram|Alpha\n'
+					'    http://www.wolframalpha.com/')
+				else:
+					connection.notice(nick, 'Ei apua.')
+
 
 			# Non god commands
 										
 			if cmd == '!reset':
 				try:
-					connection.addGod(open('god.txt').read())
+					connection.addGod(printable(open('god.txt').read()))
 					open('god.txt', 'w').writelines('')
 				except:
 					pass
 
-			elif cmd == '!help':
-				connection.message(sender, '!help !ud !day !wa !maze')
 
 			# Urban Dictionary
 			elif cmd == '!ud':
-				data = gethttp('http://www.urbandictionary.com/define.php?term='\
+				data = http.gethttp('http://www.urbandictionary.com/define.php?term='\
 				+urllib2.quote(arg)).split("\n")
 				answer = "ei tuloksia"
 				for line in data:
@@ -206,7 +244,7 @@ def cycle(connection):
 			# What's special in today
 			elif cmd == '!day':
 				date = time.strftime('%B_%e').replace(' ','')
-				data = gethttp('http://en.wikipedia.org/wiki/'+date).split('\n')
+				data = http.gethttp('http://en.wikipedia.org/wiki/'+date).split('\n')
 				fun = []
 				add = False
 				for line in data:
@@ -224,7 +262,7 @@ def cycle(connection):
 			# Wolfram|Alpha
 			elif cmd == '!wa':
 				result = "ei tuloksia"
-				wa = gethttp('http://www.wolframalpha.com/input/?i='\
+				wa = http.gethttp('http://www.wolframalpha.com/input/?i='\
 				+urllib2.quote(arg)).split('\n')
 				n = 0
 				for line in wa:
@@ -234,6 +272,10 @@ def cycle(connection):
 							result = line.split('"')[ 3 ].replace("\\n","\r\n")
 				# todo: make a nice array
 				messageUnescaped(connection, sender, result)
+				
+			# Fucking weather
+			elif cmd == '!fweather':
+				messageUnescaped(connection, sender, http.fweather(msg[9:]))
 
 			if msg.find('://') != -1:
 				url = msg[max(0, msg[:msg.find('://')].rfind(' ')+1):]
@@ -242,10 +284,10 @@ def cycle(connection):
 					if url.find(' ') != -1:
 						url = url[:url.find(' ')]
 					print 'URL = '+url
-					data = gethttp(url)
-					realurl = geturl(url)
+					data = http.gethttp(url)
+					realurl = http.geturl(url)
 					if realurl.startswith('http://www.youtube.com/watch'):
-						connection.message(sender, parseYouTube(url))
+						connection.message(sender, http.youtube(url))
 					else:
 						if data.find('<title>') != -1 and data.find('</title>') != -1:
 							title = re.sub(r'<[^>]*>','',\

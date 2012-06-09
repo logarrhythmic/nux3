@@ -38,7 +38,7 @@ class Irc:
 	def message(self, to, msg):
 		for line in msg.split('\n'):
 			line = line.replace('\r','')
-			self.send('PRIVMSG '+to+' :>'+line)
+			self.send('PRIVMSG '+to+' :'+line)
 			time.sleep(self.delay)
 
 	# NOTICE
@@ -46,7 +46,7 @@ class Irc:
 		for line in msg.split('\n'):
 			line = line.replace('\r','')
 			self.send('NOTICE '+to+' :'+line)
-			time.sleep(self.delay)
+#			time.sleep(self.delay)
 	
 	def join(self, channel):
 		self.send('JOIN '+channel+'\r\n')
