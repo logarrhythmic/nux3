@@ -10,6 +10,7 @@ import re
 import time
 import random
 import imp
+import log
 
 h = HTMLParser.HTMLParser()
 
@@ -23,7 +24,7 @@ def messageUnescaped(connection, to, text):
 		connection.message(to, text)
 
 # returns True if needs to be reloaded
-def cycle(connection):
+def cycle(connection, channels):
 	reloadModules = False
 	ircmsg = connection.recv().strip('\n\r')
 	for line in ircmsg.split('\n'):
@@ -53,7 +54,25 @@ def cycle(connection):
 			sender = nick
 			if linesplit[2][0] == '#' or linesplit[2][0] == '&':
 				sender = linesplit[2]
-			
+						
+			if msg.startswith('s/') and msg[2:].find('/') != -1:
+				if msg.count('/') == 2:
+					quote = channels.getMessage(sender, msg[2:msg.rfind('/')])
+					if quote:
+						new = re.sub(msg[2:msg[2:].find('/')+2],
+						msg[msg[2:].find('/')+3:], quote.split()[1], 1)
+						connection.message(sender, '<'+quote.split()[0]+'> '+new)
+				elif msg.count('/') == 3 and msg[msg.rfind('/')+1:] == 'g':
+					quote = channels.getMessage(sender, msg[2:msg[2:].find('/')+2])
+					if quote:
+						new = re.sub(msg[2:msg[2:].find('/')+2],
+						msg[msg[2:].find('/')+3:msg.rfind('/')], quote.split()[1])
+						connection.message(sender, '<'+quote.split()[0]+'> '+new)
+
+			else:
+				channels.addMessage(sender, nick, msg)
+
+
 			helpFound = True
 			
 			# God commands
@@ -62,14 +81,17 @@ def cycle(connection):
 				if cmd == '!join' and arg:
 					for channel in arg.split():
 						connection.join(channel)
+						channels.addChannel(channel)
 
 				# part from a channel
 				elif cmd == '!part':
 					if arg:
 						for channel in arg.split():
 							connection.part(channel, nick)
+							channels.removeChannel(channel)
 					else:
 						connection.part(sender, nick)
+						channels.removeChannel(sender)
 
 				# (rage)quit
 				elif cmd == '!quit':
@@ -104,6 +126,7 @@ def cycle(connection):
 					reloadModules = True
 					reload(http)
 					reload(irc)
+#					reload(log)
 					copy = getattr(irc, 'Irc')
 					connection.__class__ = copy
 					continue
@@ -239,7 +262,7 @@ def cycle(connection):
 					if line.find('class="definition"') != -1:
 						answer = re.sub(r'<[^>]*>','',line)
 						break
-				messageUnescaped(connection, sender, answer)
+				unescaped(connection, sender, answer)
 
 			# What's special in today
 			elif cmd == '!day':
@@ -338,6 +361,7 @@ def cycle(connection):
 			connection.godMessage(nick+' kutsui minut kanavalle '+linesplit[3][1:])
 			if linesplit[3][1] == '#' or linesplit[3][1] == '&':
 				connection.join(linesplit[3][1:])
+				channels.addChannel(linesplit[3][1:])
 				
 		# Keep gods list updated
 		elif action == 'NICK':

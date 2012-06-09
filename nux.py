@@ -4,6 +4,7 @@
 import loop
 import irc
 import sys
+import log
 
 network = sys.argv[1]
 serverport = 6667
@@ -28,8 +29,9 @@ connection = irc.Irc(network, serverport, localport)
 connection.addGod(god)
 connection.send('USER nux h h nux 3.0')
 connection.send('NICK nux')
+channels = log.Set()
 
 while 1:
-	if loop.cycle(connection):
+	if loop.cycle(connection, channels):
 		reload(loop)
 		print '\n*** RELOADED MODULES ***\n'

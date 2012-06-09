@@ -5,6 +5,7 @@
 import socket
 import time
 import sys
+import log
 
 class Irc:
 	def __init__(self, network, serverport, localport):
