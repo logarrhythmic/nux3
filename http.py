@@ -86,14 +86,20 @@ def fweather(FUCKINGPLACE):
 			FUCKINGDATA = ''.join(FUCKINGOPENER.open('http://thefuckingweather.com/?unit=c&random=True'))		
 		FUCKINGHTMLPARSER = HTMLParser.HTMLParser()
 		FUCKINGWEATHER = FUCKINGDATA[FUCKINGDATA.find('<div class="content">')+21:FUCKINGDATA.find('</>')]
-		FUCKINGTEMPERATURE = cleanHTML(classContent(FUCKINGWEATHER, 'temperature', 'class', '</p>'))
-		FUCKINGLOCATION = classContent(FUCKINGDATA, 'locationDisplaySpan', 'id')
-		print 'FUCKING WEATHER IN '+FUCKINGLOCATION
-		FUCKINGREMARK = classContent(FUCKINGWEATHER, 'remark')
-		FUCKINGFLAVOR = classContent(FUCKINGWEATHER, 'flavor')
-		
-		return unescape('\002\00312['+FUCKINGLOCATION+'] \00304\002\002'+FUCKINGTEMPERATURE+' \00308'
-		+FUCKINGREMARK+' \00311['+FUCKINGFLAVOR+']')
+
+		if FUCKINGDATA.find('I CAN&#39;T FIND THAT SHIT') == -1:
+			FUCKINGTEMPERATURE = cleanHTML(classContent(FUCKINGWEATHER, 'temperature', 'class', '</p>'))
+			FUCKINGLOCATION = classContent(FUCKINGDATA, 'locationDisplaySpan', 'id')
+			print 'FUCKING WEATHER IN '+FUCKINGLOCATION
+			FUCKINGREMARK = classContent(FUCKINGWEATHER, 'remark')
+			FUCKINGFLAVOR = classContent(FUCKINGWEATHER, 'flavor')
+			
+			return unescape('\002\00312['+FUCKINGLOCATION+'] \00304\002\002'+FUCKINGTEMPERATURE+' \00308'
+			+FUCKINGREMARK+' \00311['+FUCKINGFLAVOR+']')
+
+		else:
+			return unescape('\002\00304INVALID FUCKING LOCATION')
+						
 	except Exception as FUNCKINGEXCEPTION:
 		print 'FUCKING EXCEPTION WITH THE FUCKING WEATHER IN "'+FUCKINGPLACE+'"'
 		print FUNCKINGEXCEPTION
