@@ -74,8 +74,8 @@ def cycle(connection, channels):
 							connection.message(sender, '\002* '+quote.split()[0]+'\002 '+new)
 						# normal
 						else:
-							print '\002<'+quote.split()[0]+'>\002 '+new
-							connection.message(sender, '<'+quote.split()[0]+'> '+new)
+							print '<'+quote.split()[0]+'> '+new
+							connection.message(sender, '\002<'+quote.split()[0]+'>\002 '+new)
 
 				# s///g
 				elif msg.count('/') == 3 and msg[msg.rfind('/'):] == '/g':
@@ -96,8 +96,8 @@ def cycle(connection, channels):
 							connection.message(sender, '\002* '+quote.split()[0]+'\002 '+new)
 						# normal
 						else:
-							print '\002<'+quote.split()[0]+'>\002 '+new
-							connection.message(sender, '<'+quote.split()[0]+'> '+new)
+							print '<'+quote.split()[0]+'> '+new
+							connection.message(sender, '\002<'+quote.split()[0]+'>\002 '+new)
 
 			else:
 				channels.addMessage(sender, nick, msg)
