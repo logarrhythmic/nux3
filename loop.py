@@ -49,7 +49,9 @@ def cycle(connection, channels):
 
 			arg = ''
 			if msg.find(' ') != -1:
-				arg = msg[msg.find(' ')+1:]
+				arg = msg[msg.find(' '):]
+				if arg:
+					arg = arg[1:]
 				
 			sender = nick
 			if linesplit[2][0] == '#' or linesplit[2][0] == '&':
