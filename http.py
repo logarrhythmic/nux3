@@ -116,7 +116,7 @@ def calc(expression):
 			+answer)
 		else:
 			return unescape('\00300[\00312G\00304o\00308o\00312g\00309l\00304e\00300] \002'
-			+'\00304COULD NOT CALCULATE')
+			+'\00304Could not calculate!')
 
 
 	except Exception as e:
