@@ -16,7 +16,8 @@ class Set:
 	def removeChannel(self, name):
 		for channel in self.channels:
 			if channel.getName() == name:
-				self.channels.remove(Channel(name))
+				self.channels.remove(channel)
+				return
 
 	def addMessage(self, name, nick, message):
 		for channel in self.channels:
