@@ -156,7 +156,7 @@ def cycle(connection, channels):
 						'-- Jumalille --\n'
 						'    !delay !devil !god !join !mode !part !quit !reload !say\n'
 						'-- Kaikille --\n'
-						'    !day !help !maze (!reset) !ud !wa')
+						'    !day !help !maze (!reset) !ud !wa s//')
 					elif arg == '!delay' or arg == 'delay':
 						connection.notice(nick,
 						'!delay <float>\n'
@@ -243,6 +243,12 @@ def cycle(connection, channels):
 					'!wa <lasku tai kysymys>\n'
 					'    Wolfram|Alpha\n'
 					'    http://www.wolframalpha.com/')
+				elif arg == 's//':
+					connection.notice(nick,
+					's/<regexp1>/<regexp2>[/g]\n'
+					'    Etsii viimeisen kymmenen rivin joukosta viimeisen\n'
+					'    rivin joka vastaa <rexegp1> kuviota ja korvaa sen\n'
+					'    <regexp2> kuviolla.')
 				else:
 					connection.notice(nick, 'Ei apua.')
 
