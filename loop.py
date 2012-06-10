@@ -65,7 +65,11 @@ def cycle(connection, channels):
 						print ' '.join(quote.split()[1:])
 						new = re.sub(msg[2:msg[2:].find('/')+2],
 						msg[msg[2:].find('/')+3:], ' '.join(quote.split()[1:]), 1)
-						connection.message(sender, '<'+quote.split()[0]+'> '+new)
+						if new.startswith('\001ACTION '):
+							new = new.strip('\001')[7:]
+							connection.message(sender, '* '+quote.split()[0]+' '+new)
+						else:
+							connection.message(sender, '<'+quote.split()[0]+'> '+new)
 				elif msg.count('/') == 3 and msg[msg.rfind('/')+1:] == 'g':
 					quote = channels.getMessage(sender, msg[2:msg[2:].find('/')+2])
 					if quote:
