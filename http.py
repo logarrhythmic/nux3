@@ -112,7 +112,7 @@ def calc(expression):
 		if google.find('<h2 class="r" dir="ltr"') != -1:
 			answer = google[google.find('class="r" dir="ltr"'):]
 			answer = answer[answer.find('>')+1:answer.find('<')]
-			return unescape('\00300[\00312G\00304o\00308o\00312g\00309l\00304e\00300] \002'
+			return unescape('\00300[\00312G\00304o\00308o\00312g\00309l\00304e\00300] \003\002'
 			+answer)
 		else:
 			return unescape('\00300[\00312G\00304o\00308o\00312g\00309l\00304e\00300] \002'
