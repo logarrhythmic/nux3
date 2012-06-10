@@ -44,8 +44,7 @@ class Channel:
 			
 	def getMessage(self, quote):
 		for nick, line in zip(reversed(self.nicks), reversed(self.messages)):
-			print quote+'\t'+line
-			if re.match(quote, line):
+			if re.match('.*'+quote+'.*', line):
 				return nick+' '+line
 		return ''
 		
