@@ -62,7 +62,7 @@ def cycle(connection, channels):
 					if quote:
 						print msg[2:msg[2:].find('/')+2] + ' / ' + msg[msg[2:].find('/')+3:]
 						print quote
-						print quote.split()[1]
+						print ''.join(quote.split()[1:])
 						new = re.sub(msg[2:msg[2:].find('/')+2],
 						msg[msg[2:].find('/')+3:], quote.split()[1], 1)
 						connection.message(sender, '<'+quote.split()[0]+'> '+new)
