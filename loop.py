@@ -299,7 +299,10 @@ def cycle(connection, channels):
 					if line.find('class="definition"') != -1:
 						answer = re.sub(r'<[^>]*>','',line)
 						break
-				h.unescape(connection, sender, answer)
+				try:
+					connection.message(sender, h.unescape(answer))
+				except:
+					connection.message(sender, answer)
 
 			# What's special in today
 			elif cmd == '!day':
