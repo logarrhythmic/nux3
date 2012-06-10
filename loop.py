@@ -69,9 +69,6 @@ def cycle(connection, channels):
 					if quote:
 						new = re.sub(msg[2:msg[2:].find('/')+2],
 						msg[msg[2:].find('/')+3:msg.rfind('/')], ' '.join(quote.split()[1:]))
-				
-				else:
-					continue
 
 				print quote
 				print msg
@@ -342,10 +339,11 @@ def cycle(connection, channels):
 							if realurl != url:
 								realurl = realurl[realurl.find('://')+3:]
 								realurl = realurl[:realurl.find('/')]
-								messageUnescaped(connection, sender, 'Title: '+http.cleanHTML(title)+' \
-								\00315(at \00310\002'+realurl+'\002\00315)')
+								connection.message(sender, 'Title: '+
+								printable(http.unescape(http.cleanHTML(title)))+
+								' \00315(at \00310\002'+realurl+'\002\00315)')
 							else:
-								messageUnescaped(connection, sender, 'Title: '+http.cleanHTML(title))
+								connection.message(sender, 'Title: '+printable(http.unescape(http.cleanHTML(title))))
 						else:
 							connection.message(sender, 'No title')
 				else:
