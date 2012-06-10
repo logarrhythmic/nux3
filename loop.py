@@ -240,7 +240,7 @@ def cycle(connection, channels):
 
 			else:
 				if cmd == '!help' and not arg:
-					connection.notice(nick, '!day !help !maze !ud !wa s//')
+					connection.notice(nick, '!calc !day !help !maze !ud !wa sed')
 	
 			if cmd == '!help' and arg and not helpFound:
 				if arg == '!day' or arg == 'day':
@@ -269,7 +269,7 @@ def cycle(connection, channels):
 					'!wa <lasku tai kysymys>\n'
 					'    Wolfram|Alpha\n'
 					'    http://www.wolframalpha.com/')
-				elif arg == 's//':
+				elif arg == 'sed':
 					connection.notice(nick,
 					's/<regexp1>/<regexp2>[/g]\n'
 					'    Etsii viimeisen kymmenen rivin joukosta viimeisen\n'
@@ -339,6 +339,10 @@ def cycle(connection, channels):
 			# Fucking weather
 			elif cmd == '!fweather':
 				messageUnescaped(connection, sender, http.fweather(msg[9:]))
+
+			# Calculate using Google
+			elif cmd == '!calc':
+				connection.message(sender, http.calc(msg[5:]))
 
 			if msg.find('://') != -1:
 				url = msg[max(0, msg[:msg.find('://')].rfind(' ')+1):]

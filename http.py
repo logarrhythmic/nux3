@@ -46,10 +46,7 @@ def youtube(url):
 		title = youtube[youtube.find('<meta name="title" content="')+28:]
 		title = cleanHTML(title[:title.find('">')])
 		uploader = classContent(youtube, 'yt-user-name author')
-#		if uploader.find(', ') != -1:
-#			uploader = uploader[:uploader.find(', ')]
-#		print uploader
-		
+
 		duration = youtube[youtube.find('<meta itemprop="duration" content="PT')+37:]
 		duration = cleanHTML(duration[:duration.find('">')])
 		minutes = duration[:duration.find('M')]
@@ -103,7 +100,30 @@ def fweather(FUCKINGPLACE):
 	except Exception as FUNCKINGEXCEPTION:
 		print 'FUCKING EXCEPTION WITH THE FUCKING WEATHER IN "'+FUCKINGPLACE+'"'
 		print FUNCKINGEXCEPTION
-		return ''
+		return unescape('\002\00304INVALID FUCKING LOCATION')
+
+def calc(expression):
+	try:
+		opener = urllib2.build_opener()
+		opener.addheaders = [('User-agent', 'Nux/3.1')]
+		google = ''.join(opener.open('http://www.google.com/search?q='+
+			urllib2.quote(expression)))
+		print google
+		if google.find('<h2 class="r" dir="ltr"') != -1:
+			answer = google[google.find('class="r" dir="ltr"'):]
+			answer = answer[answer.find('>')+1:answer.find('<')]
+			return unescape('\00300[\00312G\00304o\00308o\00312g\00309l\00304e\00300] \002'
+			+answer)
+		else:
+			return unescape('\00300[\00312G\00304o\00308o\00312g\00309l\00304e\00300] \002'
+			+'\00304COULD NOT CALCULATE')
+
+
+	except Exception as e:
+		print 'EXCEPTION WITH CALCULATION "'+expression+'"'
+		print e
+		return unescape('\00300[\00312G\00304o\00308o\00312g\00309l\00304e\00300] '
+		+'\00304COULD NOT CALCULATE')
 
 def classContent(html, classname, type='class', end='<'):
 	html = html[html.find(type+'="'+classname+'"'):]
