@@ -71,10 +71,10 @@ def cycle(connection, channels):
 						if new.startswith('\001ACTION '):
 							new = new.strip('\001')[7:]
 							print '* '+quote.split()[0]+' '+new
-							connection.message(sender, '* '+quote.split()[0]+' '+new)
+							connection.message(sender, '\002* '+quote.split()[0]+'\002 '+new)
 						# normal
 						else:
-							print '<'+quote.split()[0]+'> '+new
+							print '\002<'+quote.split()[0]+'>\002 '+new
 							connection.message(sender, '<'+quote.split()[0]+'> '+new)
 
 				# s///g
@@ -93,10 +93,10 @@ def cycle(connection, channels):
 						if new.startswith('\001ACTION '):
 							new = new.strip('\001')[7:]
 							print '* '+quote.split()[0]+' '+new
-							connection.message(sender, '* '+quote.split()[0]+' '+new)
+							connection.message(sender, '\002* '+quote.split()[0]+'\002 '+new)
 						# normal
 						else:
-							print '<'+quote.split()[0]+'> '+new
+							print '\002<'+quote.split()[0]+'>\002 '+new
 							connection.message(sender, '<'+quote.split()[0]+'> '+new)
 
 			else:
