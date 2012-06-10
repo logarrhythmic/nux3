@@ -240,7 +240,7 @@ def cycle(connection, channels):
 
 			else:
 				if cmd == '!help' and not arg:
-					connection.notice(nick, '!day !help !maze !ud !wa')
+					connection.notice(nick, '!day !help !maze !ud !wa s//')
 	
 			if cmd == '!help' and arg and not helpFound:
 				if arg == '!day' or arg == 'day':
@@ -299,7 +299,7 @@ def cycle(connection, channels):
 					if line.find('class="definition"') != -1:
 						answer = re.sub(r'<[^>]*>','',line)
 						break
-				unescaped(connection, sender, answer)
+				h.unescape(connection, sender, answer)
 
 			# What's special in today
 			elif cmd == '!day':
