@@ -63,6 +63,19 @@ def cycle(connection, channels):
 						new = re.sub(msg[2:msg[2:].find('/')+2],
 						msg[msg[2:].find('/')+3:], ' '.join(quote.split()[1:]), 1)
 						
+						print quote
+						print msg
+		
+						# /me
+						if new.startswith('\001ACTION '):
+							new = new.strip('\001')[7:]
+							print '* '+quote.split()[0]+' '+new
+							connection.message(sender, '* '+quote.split()[0]+' '+new)
+						# normal
+						else:
+							print '<'+quote.split()[0]+'> '+new
+							connection.message(sender, '<'+quote.split()[0]+'> '+new)
+
 				# s///g
 				elif msg.count('/') == 3 and msg[msg.rfind('/'):] == '/g':
 					quote = channels.getMessage(sender, msg[2:msg[2:].find('/')+2])
@@ -71,18 +84,18 @@ def cycle(connection, channels):
 						msg[msg[2:].find('/')+3:msg.rfind('/')],
 						' '.join(quote.split()[1:]))
 
-				print quote
-				print msg
-
-				# /me
-				if new.startswith('\001ACTION '):
-					new = new.strip('\001')[7:]
-					print '* '+quote.split()[0]+' '+new
-					connection.message(sender, '* '+quote.split()[0]+' '+new)
-				# normal
-				else:
-					print '<'+quote.split()[0]+'> '+new
-					connection.message(sender, '<'+quote.split()[0]+'> '+new)
+						print quote
+						print msg
+		
+						# /me
+						if new.startswith('\001ACTION '):
+							new = new.strip('\001')[7:]
+							print '* '+quote.split()[0]+' '+new
+							connection.message(sender, '* '+quote.split()[0]+' '+new)
+						# normal
+						else:
+							print '<'+quote.split()[0]+'> '+new
+							connection.message(sender, '<'+quote.split()[0]+'> '+new)
 
 			else:
 				channels.addMessage(sender, nick, msg)
