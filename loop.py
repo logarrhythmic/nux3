@@ -247,8 +247,9 @@ def cycle(connection, channels):
 					connection.notice(nick,
 					's/<regexp1>/<regexp2>[/g]\n'
 					'    Etsii viimeisen kymmenen rivin joukosta viimeisen\n'
-					'    rivin joka vastaa <rexegp1> kuviota ja korvaa sen\n'
-					'    <regexp2> kuviolla.')
+					'    rivin joka vastaa <rexegp1> kuviota ja korvaa ensimmäisen\n'
+					'    esiintymän <regexp2> kuviolla. Jos /g on asetettu niin\n'
+					'    kaikki esiintymät korvataan.')
 				else:
 					connection.notice(nick, 'Ei apua.')
 
