@@ -18,7 +18,7 @@ class Irc:
 		# connect to IRC
 		self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.connection.connect((network, serverport))
-		self.delay = 0.5
+		self.delay = 2.2
 		
 	def recv(self):
 		data = self.connection.recv(self.localport).strip('\n\r')
