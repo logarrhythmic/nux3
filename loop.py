@@ -70,6 +70,7 @@ def cycle(connection, channels):
 						new = re.sub(msg[2:msg[2:].find('/')+2],
 						msg[msg[2:].find('/')+3:msg.rfind('/')], ' '.join(quote.split()[1:]))
 
+				quote = printable(quote)
 				print quote
 				print msg
 
