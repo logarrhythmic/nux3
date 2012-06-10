@@ -64,11 +64,12 @@ def cycle(connection, channels):
 						msg[msg[2:].find('/')+3:], ' '.join(quote.split()[1:]), 1)
 						
 				# s///g
-				elif msg.count('/') == 3 and msg[msg.rfind('/')+1:] == 'g':
+				elif msg.count('/') == 3 and msg[msg.rfind('/'):] == '/g':
 					quote = channels.getMessage(sender, msg[2:msg[2:].find('/')+2])
 					if quote:
 						new = re.sub(msg[2:msg[2:].find('/')+2],
-						msg[msg[2:].find('/')+3:msg.rfind('/')], ' '.join(quote.split()[1:]))
+						msg[msg[2:].find('/')+3:msg.rfind('/')],
+						' '.join(quote.split()[1:]))
 
 				print quote
 				print msg
@@ -339,11 +340,12 @@ def cycle(connection, channels):
 							if realurl != url:
 								realurl = realurl[realurl.find('://')+3:]
 								realurl = realurl[:realurl.find('/')]
-								connection.message(sender, 'Title: '+
-								printable(http.unescape(http.cleanHTML(title)))+
-								' \00315(at \00310\002'+realurl+'\002\00315)')
+								connection.message(sender, 'Title: '
+								+printable(http.unescape(http.cleanHTML(title)))
+								+' \00315(at \00310\002'+realurl+'\002\00315)')
 							else:
-								connection.message(sender, 'Title: '+printable(http.unescape(http.cleanHTML(title))))
+								connection.message(sender, 'Title: '
+								+printable(http.unescape(http.cleanHTML(title))))
 						else:
 							connection.message(sender, 'No title')
 				else:
