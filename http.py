@@ -66,7 +66,7 @@ def youtube(url):
 		views = cleanHTML(classContent(youtube, 'watch-view-count', 'class', '</span>'))
 		likes = classContent(youtube, 'likes')
 		dislikes = classContent(youtube, 'dislikes')
-		return '[\002You\00304Tube\003\002] \002'+title+'\002 \00311('+minutes+':'+seconds+\
+		return '[You\00305Tube\003] \002'+title+'\002 \00311('+minutes+':'+seconds+\
 		') \00312by '+uploader+'\00314\002\002, \00309'+likes+' likes\00314\002\002, \00304'\
 		+dislikes+' dislikes\00314\002\002, \00308'+views+' views'
 	except Exception as e:
