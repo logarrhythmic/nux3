@@ -44,6 +44,7 @@ def cycle(connection, channels):
 			action = line.split()[1]
 		if action == 'PRIVMSG':
 			msg = line[line[1:].find(':')+2:]
+			cmd = ''
 			if len(msg.split()) > 0:
 				cmd = msg.split()[0]
 
