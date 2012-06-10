@@ -380,18 +380,25 @@ def cycle(connection, channels):
 					if connection.isGod(nick):
 						if y > 40 or x > 63:
 							connection.message(sender, 'suurin koko on 63x40')
+							continue
+						elif x < 3 or y < 3:
+							connection.message(sender, 'pienin koko on 3x3')
+						else:
+							maze = os.popen('java Generator '+str(x)+' '+str(y)+' | ./box.sh').read()
+							connection.message(sender, maze)
 					else:
 						if y > 10 or x > 30:
 							connection.message(sender, 'suurin koko on 30x10')
+							continue
 
-					if x < 3 or y < 3:
-						connection.message(sender, 'pienin koko on 3x3')
-					else:
-						maze = os.popen('java Generator '+str(x)+' '+str(y)+' | ./box.sh').read()
-						if connection.isGod(nick) or y < 6:
-							connection.message(sender, maze)
+						elif x < 3 or y < 3:
+							connection.message(sender, 'pienin koko on 3x3')
 						else:
-							connection.message(nick, maze)
+							maze = os.popen('java Generator '+str(x)+' '+str(y)+' | ./box.sh').read()
+							if y < 6:
+								connection.message(sender, maze)
+							else:
+								connection.message(nick, maze)
 				except ValueError:
 					connection.message(sender, 'syntaksi: !maze <leveys>x<korkeus>')
 				except IndexError:
