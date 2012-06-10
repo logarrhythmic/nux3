@@ -169,7 +169,7 @@ def cycle(connection, channels):
 						except ValueError:
 							pass
 					else:
-						connection.notice(sender, 'viive on '+str(connection.getDelay())+'s')
+						connection.message(sender, 'viive on '+str(connection.getDelay())+'s')
 
 				# Say
 				elif cmd == '!say' and len(arg.split()) > 1:
