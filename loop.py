@@ -57,6 +57,7 @@ def cycle(connection, channels):
 						
 			if msg.startswith('s/') and msg[2:].find('/') != -1:
 				if msg.count('/') == 2:
+					print msg[2:msg.rfind('/')]
 					quote = channels.getMessage(sender, msg[2:msg.rfind('/')])
 					if quote:
 						print msg[2:msg[2:].find('/')+2] + ' / ' + msg[msg[2:].find('/')+3:]
