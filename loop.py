@@ -182,7 +182,7 @@ def cycle(connection, channels):
 						'-- Jumalille --\n'
 						'    !delay !devil !god !join !mode !part !quit !reload !say\n'
 						'-- Kaikille --\n'
-						'    !day !help !maze (!reset) !ud !wa s//')
+						'    !calc !day !help !maze (!reset) !ud !wa sed')
 					elif arg == '!delay' or arg == 'delay':
 						connection.notice(nick,
 						'!delay <float>\n'
