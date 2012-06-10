@@ -276,6 +276,11 @@ def cycle(connection, channels):
 					'    rivin joka vastaa <rexegp1> kuviota ja korvaa ensimmäisen\n'
 					'    esiintymän <regexp2> kuviolla. Jos /g on asetettu niin\n'
 					'    kaikki esiintymät korvataan.')
+				elif arg == '!calc' or arg == 'calc':
+					connection.notice(nick,
+					'!calc <lasku>\n'
+					'    Googlen laskin, \n'
+					'https://www.google.fi/intl/fi/help/features.html#calculator')
 				else:
 					connection.notice(nick, 'Ei apua.')
 
