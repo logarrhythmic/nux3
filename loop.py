@@ -318,10 +318,10 @@ def cycle(connection, channels):
 							if realurl != url:
 								realurl = realurl[realurl.find('://')+3:]
 								realurl = realurl[:realurl.find('/')]
-								messageUnescaped(connection, sender, 'Title: '+cleanHTML(title)+' \
+								messageUnescaped(connection, sender, 'Title: '+http.cleanHTML(title)+' \
 								\00315(at \00310\002'+realurl+'\002\00315)')
 							else:
-								messageUnescaped(connection, sender, 'Title: '+cleanHTML(title))
+								messageUnescaped(connection, sender, 'Title: '+http.cleanHTML(title))
 						else:
 							connection.message(sender, 'No title')
 				else:
