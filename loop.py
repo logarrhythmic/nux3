@@ -280,7 +280,7 @@ def cycle(connection, channels):
 					connection.notice(nick,
 					'!calc <lasku>\n'
 					'    Googlen laskin, \n'
-					'https://www.google.fi/intl/fi/help/features.html#calculator')
+					'    https://www.google.fi/intl/fi/help/features.html#calculator')
 				else:
 					connection.notice(nick, 'Ei apua.')
 
