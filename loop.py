@@ -26,8 +26,8 @@ def messageUnescaped(connection, to, text):
 # returns True if needs to be reloaded
 def cycle(connection, channels):
 	reloadModules = False
-	ircmsg = connection.recv().strip('\n\r')
-	for line in ircmsg.split('\n'):
+	ircmsg = connection.recv()
+	for line in ircmsg:
 		print '>'+line			
 		linesplit = line.split()
 
@@ -437,16 +437,20 @@ def cycle(connection, channels):
 		elif action == 'PART':
 			sender = linesplit[2]
 			connection.send('NAMES '+sender)
-			line = connection.recv().strip('\r\n')
-			print '>'+line
-			names = line.split(':')[2].split()
-			if len(names) == 1:
-				if names[0][0] == 'n' or names[0][0] == '+' or names[0][0] == '%':
-					print line.split(':')
-					print line.split(':')[2].split()
-					connection.part(sender, nick)
-					connection.join(sender)
-					connection.godMessage('valtasin kanavan '+sender)
+			ircmsg = connection.recv().strip('\r\n')
+			for line in ircmsg:
+				print lines
+				if len(line.split()) > 1 and len(line.split(':')) > 1:
+					if line.find(sender+' :') != -1 and line.split()[2] = 'nux'
+					names = line.split(':')[2].split()
+					print names
+					if len(names) == 1:
+						if names[0][0] == 'n' or names[0][0] == '+' or names[0][0] == '%':
+							print line.split(':')
+							print line.split(':')[2].split()
+							connection.part(sender, nick)
+							connection.join(sender)
+							connection.godMessage('valtasin kanavan '+sender)
 		
 		# Auto rejoin
 		elif action == 'KICK':
