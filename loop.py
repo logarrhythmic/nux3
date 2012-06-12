@@ -442,15 +442,15 @@ def cycle(connection, channels):
 				print lines
 				if len(line.split()) > 1 and len(line.split(':')) > 1:
 					if line.find(sender+' :') != -1 and line.split()[2] == 'nux':
-					names = line.split(':')[2].split()
-					print names
-					if len(names) == 1:
-						if names[0][0] == 'n' or names[0][0] == '+' or names[0][0] == '%':
-							print line.split(':')
-							print line.split(':')[2].split()
-							connection.part(sender, nick)
-							connection.join(sender)
-							connection.godMessage('valtasin kanavan '+sender)
+						names = line.split(':')[2].split()
+						print names
+						if len(names) == 1:
+							if names[0][0] == 'n' or names[0][0] == '+' or names[0][0] == '%':
+								print line.split(':')
+								print line.split(':')[2].split()
+								connection.part(sender, nick)
+								connection.join(sender)
+								connection.godMessage('valtasin kanavan '+sender)
 		
 		# Auto rejoin
 		elif action == 'KICK':
