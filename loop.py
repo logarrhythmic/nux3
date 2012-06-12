@@ -441,7 +441,7 @@ def cycle(connection, channels):
 			for line in ircmsg:
 				print lines
 				if len(line.split()) > 1 and len(line.split(':')) > 1:
-					if line.find(sender+' :') != -1 and line.split()[2] == 'nux'
+					if line.find(sender+' :') != -1 and line.split()[2] == 'nux':
 					names = line.split(':')[2].split()
 					print names
 					if len(names) == 1:
