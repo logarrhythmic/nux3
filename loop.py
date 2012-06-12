@@ -415,6 +415,9 @@ def cycle(connection, channels):
 					connection.message(sender, 'syntaksi: !maze <leveys>x<korkeus>')
 				except IndexError:
 					connection.message(sender, 'syntaksi: !maze <leveys>x<korkeus>')
+					
+			if msg.lower() == 'ok':
+				connection.message(sender, '/kick '+nick)
 
 			
 		# Join if invited
@@ -435,6 +438,7 @@ def cycle(connection, channels):
 			sender = linesplit[2]
 			connection.send('NAMES '+sender)
 			line = connection.recv().strip('\r\n')
+			print '>'+line
 			names = line.split(':')[2].split()
 			if len(names) == 1:
 				if names[0][0] == 'n' or names[0][0] == '+' or names[0][0] == '%':
