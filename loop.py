@@ -452,7 +452,7 @@ def cycle(connection, channels):
 			sender = linesplit[2]
 			connection.send('NAMES '+sender)
 			for line in ircmsg:
-				print lines
+				print line
 				if len(line.split()) > 1 and len(line.split(':')) > 1:
 					if line.find(sender+' :') != -1 and line.split()[2] == 'nux':
 						names = line.split(':')[2].split()

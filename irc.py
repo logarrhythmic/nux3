@@ -25,7 +25,7 @@ class Irc:
 		# NickServ authentication
 		if not self.authenticated and data.find('MOTD') != -1:
 			self.authenticated = True
-#			self.auth()
+			self.auth()
 			
 		data = data.split('\n')
 		for line in data:
