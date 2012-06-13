@@ -17,9 +17,9 @@ for arg in sys.argv:
 	if arg.startswith('--network='):
 		network = arg[arg.find('=')+1:]
 	if arg.startswith('--server_port='):
-		serverport = arg[arg.find('=')+1:]
+		serverport = int(arg[arg.find('=')+1:])
 	if arg.startswith('--local_port='):
-		localport = arg[arg.find('=')+1:]
+		localport = int(arg[arg.find('=')+1:])
 	if arg.startswith('--god='):
 		god = arg[arg.find('=')+1:]
 		

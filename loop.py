@@ -28,13 +28,16 @@ def cycle(connection, channels):
 	reloadModules = False
 	ircmsg = connection.recv()
 	for line in ircmsg:
-		print '>'+line			
 		linesplit = line.split()
 
 		# it doesn't matter if nux sends unnecessary PONGs
 		# but it does matter if any PING is ignored
 		if line.startswith('PING :'):
 			connection.send('PONG :'+line.split('PING :')[1])
+			continue
+
+		if line.startswith('VERSION :'):
+			connection.send('VERSION :nux 3.1')
 			continue
 		
 		nick = ''
@@ -418,7 +421,18 @@ def cycle(connection, channels):
 					
 			if msg.lower() == 'ok':
 				connection.message(sender, '/kick '+nick)
-
+				
+			# CTCPs
+			if msg[0] == '\001' and msg[-1] == '\001' and not msg[1:].startswith('ACTION'):
+				msg = msg.strip('\001')
+				if msg == 'VERSION':
+					print 'CTCP VERSION request from '+nick
+					connection.notice(nick, '\001VERSION nux v3.1\001')
+				if msg.startswith('PING '):
+					print 'CTCP PING request from '+nick
+					connection.notice(nick, '\001PING '+msg[5:]+'\001')
+				else:
+					print 'Unknown CTCP '+msg+' request from '+nick					
 			
 		# Join if invited
 		elif action == 'INVITE':
@@ -437,7 +451,6 @@ def cycle(connection, channels):
 		elif action == 'PART':
 			sender = linesplit[2]
 			connection.send('NAMES '+sender)
-			ircmsg = connection.recv().strip('\r\n')
 			for line in ircmsg:
 				print lines
 				if len(line.split()) > 1 and len(line.split(':')) > 1:
