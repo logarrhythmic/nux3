@@ -331,7 +331,7 @@ def cycle(connection, channels):
 						add = True
 						
 				# if `date +%-d.%-m.` outputs '-d.-m.', replace '%-d.%-m.' with '%d.%m.'
-				connection.message(sender, time.strftime('%-d.%-m.') + random.choice(fun[1:-1]))
+				connection.message(sender, random.choice(fun[1:-1]))
 
 			# Wolfram|Alpha
 			elif cmd == '!wa':
@@ -465,9 +465,7 @@ def cycle(connection, channels):
 								connection.join(sender)
 								connection.godMessage('valtasin kanavan '+sender)
 		
-		# Auto rejoin
-		elif action == 'KICK':
-			connection.join(line.split()[2])
+		#Autojoin
 			
 		# Protect self from hackers
 		elif action == 'QUIT':

@@ -8,32 +8,58 @@ import sys
 import log
 
 class Irc:
-	def __init__(self, network, serverport, localport):
+	def __init__(self, network, serverport, nickname, realname):
 		self.network = network
 		self.serverport = serverport
-		self.localport = localport
 		self.gods = []
 		self.authenticated = False
+		self.nickname = nickname
 		
 		# connect to IRC
 		self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.connection.connect((network, serverport))
-		self.delay = 2.2
+		self.send('NICK '+nickname)
+		self.send('USER '+nickname+' host irc-server :'+realname)
+		self.delay = 0
+		self.commands = [modules.help.help()]
 		
+	def cycle(self):
+		line = self.recv()
+		if line[1] == ':':
+			sender = line.split()[0][1:]
+			command = line.split()[1]
+			if command = 'PRIVMSG':
+				user = line.split()[0][1:]
+				destination = line.split()[2]
+				message = line[line[1:].find(':')+2:]
+				if destination = self.nickname:
+					destination = nick
+#				if message[0]
+				for command in self.commands:
+					command(self, user, destination, message)
+		else:
+			command = line.split()[0]
+			if command = 'PING':
+				self.send('PONG '+line[5:])
+
 	def recv(self):
-		data = self.connection.recv(self.localport).strip('\n\r')
-		# NickServ authentication
-		if not self.authenticated and data.find('MOTD') != -1:
-			self.authenticated = True
-			self.auth()
-			
-		data = data.split('\n')
-		for line in data:
-			print '>'+line
+		# receive one character at time until "\n"
+		data = ""
+		while 1:
+			character = self.connection.recv(1)
+			if character:
+				# only receive one line at time
+				if character == '\n':
+					break
+				if character != '\r':
+					data += character
+			else:
+				raise RuntimeException("Connection closed")
+		print '>'+data
 		return data
 
 	def send(self, data):
-		data = data.split('\n')[0]
+		data = data[:data.find('\n')]
 		if len(data) > 396:
 			data = data[:data[:400].rfind(' ')]+' ...'
 		print '<'+data
