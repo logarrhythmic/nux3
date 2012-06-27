@@ -1,37 +1,29 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-import loop
-import irc
 import sys
-import log
+import irc
+#import modules
 
 network = sys.argv[1]
 serverport = 6667
-localport = 4096
-god = 'pantteri'
+god = sys.argv[2]
 
 for arg in sys.argv:
-	if arg.startswith('--server='):
+	if arg.startswith('-n='):
 		network = arg[arg.find('=')+1:]
-	if arg.startswith('--network='):
-		network = arg[arg.find('=')+1:]
-	if arg.startswith('--server_port='):
+	if arg.startswith('-p='):
 		serverport = int(arg[arg.find('=')+1:])
-	if arg.startswith('--local_port='):
-		localport = int(arg[arg.find('=')+1:])
-	if arg.startswith('--god='):
+	if arg.startswith('-g='):
 		god = arg[arg.find('=')+1:]
-		
 
-#irc = loop.loop(network, serverport, localport, god)
-connection = irc.Irc(network, serverport, localport)
-connection.addGod(god)
-connection.send('USER nux h h nux 3.0')
-connection.send('NICK nux')
-channels = log.Set()
+bot = irc.Bot(network, serverport, 'nux', 'pantterin botti')
+bot.addGod(god)
 
 while 1:
-	if loop.cycle(connection, channels):
-		reload(loop)
+	if bot.cycle():
+		reload(irc)
+		bot.reloadModules()
+		copy = getattr(irc, 'Bot')
+		bot.__class__ = copy
 		print '\n*** RELOADED MODULES ***\n'

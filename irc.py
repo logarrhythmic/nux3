@@ -1,13 +1,12 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-#import inspect_shell
 import socket
 import time
 import sys
-import log
+import modules.help
 
-class Irc:
+class Bot:
 	def __init__(self, network, serverport, nickname, realname):
 		self.network = network
 		self.serverport = serverport
@@ -21,25 +20,26 @@ class Irc:
 		self.send('NICK '+nickname)
 		self.send('USER '+nickname+' host irc-server :'+realname)
 		self.delay = 0
-		self.commands = [modules.help.help()]
+		self.functions = [modules.help.showhelp]
 		
 	def cycle(self):
 		line = self.recv()
-		if line[1] == ':':
+		if line[0] == ':':
 			sender = line.split()[0][1:]
 			command = line.split()[1]
-			if command = 'PRIVMSG':
+			if command == 'PRIVMSG':
 				user = line.split()[0][1:]
 				destination = line.split()[2]
 				message = line[line[1:].find(':')+2:]
-				if destination = self.nickname:
+				# queries
+				if destination == self.nickname:
 					destination = nick
-#				if message[0]
-				for command in self.commands:
-					command(self, user, destination, message)
+
+				for function in self.functions:
+					function(self, user, destination, message)
 		else:
 			command = line.split()[0]
-			if command = 'PING':
+			if command == 'PING':
 				self.send('PONG '+line[5:])
 
 	def recv(self):
@@ -59,7 +59,8 @@ class Irc:
 		return data
 
 	def send(self, data):
-		data = data[:data.find('\n')]
+		if data.find('\n') != -1:
+			data = data[:data.find('\n')]
 		if len(data) > 396:
 			data = data[:data[:400].rfind(' ')]+' ...'
 		print '<'+data
