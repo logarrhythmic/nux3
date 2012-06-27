@@ -1,0 +1,34 @@
+--- Day changed Fri May 25 2012
+--
+11:19:57 <+pantteri> hyvää musiikkia x3
+11:20:15 <+pantteri> wolfram: fireworks
+11:22:01 <@zee> !wa fireworks
+11:22:05 <@zee> ^^^^^^^^^
+11:22:08 <+pantteri> :D
+11:22:11 <+pantteri> aattelin samaa
+11:22:18 <+pantteri> hm
+11:22:24 <+pantteri> vois tehä wa botin
+11:22:46 <@zee> et saa validia
+11:23:28 <+pantteri> ehken
+11:23:33 <+pantteri> mut jonkulaisen saan
+11:24:26 <+pantteri> challenge accepted teen semmosen jolle annetaan tekstiä ja se palauttaa validissa muodossa solution kohdan
+--
+22:06:56 <+pantteri> !wa 5!
+22:07:03 < nux> Result: 120
+--
+22:18:34 <@zee> !wa 'id
+22:18:36 < nux> Result: CDXCIX 1 foot
+22:18:40 <@zee> !wa '|ls
+22:18:42 < nux> Result: No results
+22:18:42 <@zee> !wa '"|ls
+22:18:44 < nux> Result: No results
+22:18:48 <+pantteri> lol xD
+22:18:50 <@zee> !wa '"|%00ls
+22:18:52 < nux> Result: 12 in^2  (square inches)  |  0 light seconds
+22:18:56 <@zee> ahaa
+22:18:56 <+pantteri> xDDDD
+22:19:00 <@zee> !wa '''"|%00ls
+22:19:02 < nux> Result: 1 in \'\'\'  (inch zorch)  |  0 light seconds
+22:19:10 ** pantteri repeilee
+--
+--- Day changed Sat May 26 2012
