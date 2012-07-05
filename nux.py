@@ -3,27 +3,23 @@
 
 import sys
 import irc
-#import modules
+import modules
 
-network = sys.argv[1]
-serverport = 6667
-god = sys.argv[2]
+try:
+    network = sys.argv[1]
+    serverport = 6667
+    god = sys.argv[2]
+    if len(sys.argv) > 3:
+        serverport = int(sys.argv[3])
 
-for arg in sys.argv:
-	if arg.startswith('-n='):
-		network = arg[arg.find('=')+1:]
-	if arg.startswith('-p='):
-		serverport = int(arg[arg.find('=')+1:])
-	if arg.startswith('-g='):
-		god = arg[arg.find('=')+1:]
-
-bot = irc.Bot(network, serverport, 'nux', 'pantterin botti')
-bot.addGod(god)
-
-while 1:
-	if bot.cycle():
-		reload(irc)
-		bot.reloadModules()
-		copy = getattr(irc, 'Bot')
-		bot.__class__ = copy
-		print '\n*** RELOADED MODULES ***\n'
+    bot = irc.Bot(network, serverport, 'nux', 'pantterin botti')
+    bot.addGod(god)
+    
+    while 1:
+        if bot.cycle():
+            reload(irc)
+            copy = getattr(irc, 'Bot')
+            bot.__class__ = copy
+            print '\n\033[37;41m*** RELOADED MODULES ***\033[0m\n'
+except IndexError:
+    print 'Usage: nux.py <network> <god> [<port>]'
