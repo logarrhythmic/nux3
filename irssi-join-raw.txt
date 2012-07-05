@@ -1,0 +1,19 @@
+:80.223.184.219 
+:p!~p@evo.paivola.fi 
+
+JOIN
+:80.223.184.219 JOIN :#h
+:80.223.184.219 353 p = #h :@p
+:80.223.184.219 366 p #h :EON
+MODE #h
+:80.223.184.219 324 p #h +n
+:80.223.184.219 329 p #h 1337000000
+WHO #h
+:80.223.184.219 352 p #h pantteri evo.paivola.fi 80.223.184.219 p H@ :0 Felix Bade
+:80.223.184.219 315 p #h :EOW
+MODE #h b
+:80.223.184.219 368 p #h :EOB
+
+:irc.northpole.fi 352 p #h ~h dsl-espbrasgw1-feb8df00-219.dhcp.inet.fi irc.northpole.fi p H@ :0 h
+:irc.northpole.fi 315 p #h :End of /WHO list.
+:irc.northpole.fi 368 p #h :End of Channel Ban List

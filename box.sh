@@ -1,1 +1,0 @@
-sed 's/0/  /g' | sed 's/1/╵ /g' | sed 's/2/──/g' | sed 's/3/└─/g' | sed 's/4/╷ /g' | sed 's/5/│ /g' | sed 's/6/┌─/g' | sed 's/7/├─/g' | sed 's/8/╴ /g' | sed 's/9/┘ /g' | sed 's/A/──/g' | sed 's/B/┴─/g' | sed 's/C/┐ /g' | sed 's/D/┤ /g' | sed 's/E/┬─/g' | sed 's/F/┼─/g'
